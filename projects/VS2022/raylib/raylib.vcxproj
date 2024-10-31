@@ -302,6 +302,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\external\win32_tray.c" />
     <ClCompile Include="..\..\..\src\raudio.c" />
     <ClCompile Include="..\..\..\src\rcore.c" />
     <ClCompile Include="..\..\..\src\rmodels.c" />
@@ -313,6 +314,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\external\cgltf.h" />
+    <ClInclude Include="..\..\..\src\external\win32_tray.h" />
     <ClInclude Include="..\..\..\src\rcamera.h" />
     <ClInclude Include="..\..\..\src\config.h" />
     <ClInclude Include="..\..\..\src\external\glad.h" />

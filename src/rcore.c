@@ -153,6 +153,11 @@
     #define _GNU_SOURCE
 #endif
 
+#if( defined(_WIN32) && defined(SUPPORT_TRAY_ICON))
+    #include "external/win32_tray.h"    // Tray icons and notification bubbles on Windows
+#endif
+
+
 // Platform specific defines to handle GetApplicationDirectory()
 #if (defined(_WIN32) && !defined(PLATFORM_DESKTOP_RGFW)) || (defined(_MSC_VER) && defined(PLATFORM_DESKTOP_RGFW))
     #ifndef MAX_PATH

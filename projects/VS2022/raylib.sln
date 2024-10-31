@@ -297,13 +297,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shapes_splines_drawing", "e
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shapes_top_down_lights", "examples\shapes_top_down_lights.vcxproj", "{703BE7BA-5B99-4F70-806D-3A259F6A991E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shapes_rectangle_advanced", "examples\shapes_rectangle_advanced.vcxproj", "{703BE7BA-5B99-4F70-806D-3A259F6A991E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shapes_rectangle_advanced", "examples\shapes_rectangle_advanced.vcxproj", "{B2057DAE-FB8B-4123-8A80-3DBC7021448E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "models_gpu_skinning", "examples\models_gpu_skinning.vcxproj", "{8245DAD9-D402-4D5C-8F45-32229CD3B263}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shaders_shadowmap", "examples\shaders_shadowmap.vcxproj", "{41BBCC10-6FDE-48A1-B2E0-A0EC6A668629}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_input_virtual_controls", "examples\core_input_virtual_controls.vcxproj", "{92B64AE7-D773-6F03-89F1-CE59BBF4F053}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core_tray_icon", "examples\core_tray_icon.vcxproj", "{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2521,6 +2523,22 @@ Global
 		{703BE7BA-5B99-4F70-806D-3A259F6A991E}.Release|x64.Build.0 = Release|x64
 		{703BE7BA-5B99-4F70-806D-3A259F6A991E}.Release|x86.ActiveCfg = Release|Win32
 		{703BE7BA-5B99-4F70-806D-3A259F6A991E}.Release|x86.Build.0 = Release|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug.DLL|x64.ActiveCfg = Debug.DLL|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug.DLL|x64.Build.0 = Debug.DLL|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug.DLL|x86.ActiveCfg = Debug.DLL|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug.DLL|x86.Build.0 = Debug.DLL|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug|x64.ActiveCfg = Debug|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug|x64.Build.0 = Debug|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug|x86.ActiveCfg = Debug|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Debug|x86.Build.0 = Debug|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release.DLL|x64.ActiveCfg = Release.DLL|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release.DLL|x64.Build.0 = Release.DLL|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release.DLL|x86.ActiveCfg = Release.DLL|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release.DLL|x86.Build.0 = Release.DLL|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release|x64.ActiveCfg = Release|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release|x64.Build.0 = Release|x64
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release|x86.ActiveCfg = Release|Win32
+		{B2057DAE-FB8B-4123-8A80-3DBC7021448E}.Release|x86.Build.0 = Release|Win32
 		{8245DAD9-D402-4D5C-8F45-32229CD3B263}.Debug.DLL|x64.ActiveCfg = Debug.DLL|x64
 		{8245DAD9-D402-4D5C-8F45-32229CD3B263}.Debug.DLL|x64.Build.0 = Debug.DLL|x64
 		{8245DAD9-D402-4D5C-8F45-32229CD3B263}.Debug.DLL|x86.ActiveCfg = Debug.DLL|Win32
@@ -2569,6 +2587,22 @@ Global
 		{92B64AE7-D773-6F03-89F1-CE59BBF4F053}.Release|x64.Build.0 = Release|x64
 		{92B64AE7-D773-6F03-89F1-CE59BBF4F053}.Release|x86.ActiveCfg = Release|Win32
 		{92B64AE7-D773-6F03-89F1-CE59BBF4F053}.Release|x86.Build.0 = Release|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug.DLL|x64.ActiveCfg = Debug.DLL|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug.DLL|x64.Build.0 = Debug.DLL|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug.DLL|x86.ActiveCfg = Debug.DLL|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug.DLL|x86.Build.0 = Debug.DLL|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug|x64.ActiveCfg = Debug|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug|x64.Build.0 = Debug|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug|x86.ActiveCfg = Debug|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Debug|x86.Build.0 = Debug|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release.DLL|x64.ActiveCfg = Release.DLL|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release.DLL|x64.Build.0 = Release.DLL|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release.DLL|x86.ActiveCfg = Release.DLL|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release.DLL|x86.Build.0 = Release.DLL|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release|x64.ActiveCfg = Release|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release|x64.Build.0 = Release|x64
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release|x86.ActiveCfg = Release|Win32
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2722,6 +2756,7 @@ Global
 		{8245DAD9-D402-4D5C-8F45-32229CD3B263} = {AF5BEC5C-1F2B-4DA8-B12D-D09FE569237C}
 		{41BBCC10-6FDE-48A1-B2E0-A0EC6A668629} = {5317807F-61D4-4E0F-B6DC-2D9F12621ED9}
 		{92B64AE7-D773-6F03-89F1-CE59BBF4F053} = {6C82BAAE-BDDF-457D-8FA8-7E2490B07035}
+		{71FBAD05-6120-46ED-A138-B3EDBB0C22E9} = {6C82BAAE-BDDF-457D-8FA8-7E2490B07035}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E926C768-6307-4423-A1EC-57E95B1FAB29}

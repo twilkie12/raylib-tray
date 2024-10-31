@@ -30,11 +30,12 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 850;
+    const int screenHeight = 400;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "raylib [core] example - tray icon");
 
+    TrayCheck();
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -52,7 +53,7 @@ int main(void)
 
             ClearBackground(RAYWHITE);
 
-            DrawText("Tray icon", 190, 200, 20, LIGHTGRAY);
+            DrawText("Tray icon", 190, 200, 20, BLACK);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
