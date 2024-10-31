@@ -28,6 +28,10 @@
 //------------------------------------------------------------------------------------
 int main(void)
 {
+    puts("Starting");
+    TrayCheck("Parameter string");
+    InitTrayIcon(NULL, NULL, NULL);
+
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 850;
@@ -35,7 +39,6 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - tray icon");
 
-    TrayCheck();
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
