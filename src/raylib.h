@@ -943,6 +943,17 @@ typedef enum {
     NPATCH_THREE_PATCH_HORIZONTAL   // Npatch layout: 3x1 tiles
 } NPatchLayout;
 
+// Tray events 
+typedef enum
+{
+    NO_TRAY_EVENT = 0,
+    TRAY_ICON_CLICKED,
+    TRAY_ICON_DOUBLE_CLICKED,
+    NOTIFICATION_BALLOON_TIMEOUT,
+    NOTIFICATION_BALLOON_HIDDEN,
+    NOTIFICATION_BALLOON_CLICKED
+}trayEvent;
+
 // Callbacks to hook some internal functions
 // WARNING: These callbacks are intended for advanced users
 typedef void (*TraceLogCallback)(int logLevel, const char *text, va_list args);  // Logging: Redirect trace log messages
@@ -1014,10 +1025,15 @@ RLAPI const char *GetClipboardText(void);                         // Get clipboa
 RLAPI void EnableEventWaiting(void);                              // Enable waiting for events on EndDrawing(), no automatic event polling
 RLAPI void DisableEventWaiting(void);                             // Disable waiting for events on EndDrawing(), automatic events polling
 
+#if defined (_WIN32)
 // Tray and notification related functions
 RLAPI void TrayTest(const char* test_string);
 RLAPI bool InitTrayIcon(const char* icon_path, const char* tooltip_text);
 RLAPI void RemoveTrayIcon(void);
+RLAPI void HideTrayIcon(void);
+RLAPI void ShowTrayIcon(void);
+RLAPI trayEvent GetTrayEvent(void);
+#endif
 
 // Cursor-related functions
 RLAPI void ShowCursor(void);                                      // Shows cursor

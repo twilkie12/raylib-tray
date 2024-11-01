@@ -29,9 +29,16 @@
 //------------------------------------------------------------------------------------
 int main(void)
 {
-    puts("Starting");
-    TrayTest("Parameter string");
-    InitTrayIcon("C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib.ico", NULL);
+    InitTrayIcon("C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib.ico", "Tooltip text");
+    /*
+    Sleep(2000);
+    puts("Hiding icon");
+    HideTrayIcon();
+    Sleep(2000);
+    puts("Showing icon");
+    ShowTrayIcon();
+    */
+
 
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -50,6 +57,36 @@ int main(void)
         //----------------------------------------------------------------------------------
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
+        trayEvent tray_event;
+        do
+        {
+            tray_event = GetTrayEvent();
+
+            switch (tray_event)
+            {
+            case (NO_TRAY_EVENT):
+                break;
+            case (TRAY_ICON_CLICKED):
+                puts("Tray icon clicked");
+                break;
+            case (TRAY_ICON_DOUBLE_CLICKED):
+                puts("Tray icon double clicked");
+                break;
+            case (NOTIFICATION_BALLOON_TIMEOUT):
+                puts("Balloon timed out");
+                break;
+            case (NOTIFICATION_BALLOON_HIDDEN):
+                puts("Balloon hidden");
+                break;
+            case (NOTIFICATION_BALLOON_CLICKED):
+                puts("Balloon clicked");
+                break;
+            default:
+                puts("Error with tray event fetch");
+                break;
+            }
+
+        } while (tray_event != NO_TRAY_EVENT);
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -57,7 +94,7 @@ int main(void)
 
             ClearBackground(RAYWHITE);
 
-            DrawText("Tray icon", 190, 200, 20, BLACK);
+            DrawText("Tray icon test", 190, 200, 20, BLACK);
 
         EndDrawing();
         //----------------------------------------------------------------------------------

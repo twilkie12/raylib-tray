@@ -1,5 +1,5 @@
-#include "win32_tray.h"
-
+#include <stdbool.h>
+#include <stdio.h>
 
 #define NOGDI
 #define WIN32_LEAN_AND_MEAN
@@ -7,25 +7,39 @@
 #include <Windows.h>
 #include <shellapi.h>
 
+
+#define WM_TRAYICON (9009)
+
+typedef enum
+{
+    NO_TRAY_EVENT = 0,
+    TRAY_ICON_CLICKED,
+    TRAY_ICON_DOUBLE_CLICKED,
+    NOTIFICATION_BALLOON_TIMEOUT,
+    NOTIFICATION_BALLOON_HIDDEN,
+    NOTIFICATION_BALLOON_CLICKED,
+
+}trayEvent;
+
 #define TRAY_BUFFER_LENGTH 50
 static HWND TRAY_WINDOW_HANDLE;
 static NOTIFYICONDATAA ICON_DATA;
 static WNDCLASSA TRAY_WINDOW_CLASS;
 static HMENU TRAY_POPUP_MENU;
 
-static void InitNotificationStruct(const char* icon_path, const char* tooltip_text, DWORD info_flags);
+
+static void InitNotificationData(const char* icon_path, const char* tooltip_text, DWORD info_flags);
 static bool RegisterTrayWindowClass(void);
 static void PlaceTrayIcon(void);
-
 static LRESULT CALLBACK TrayWindowProcess(HWND, UINT, WPARAM, LPARAM);
-static trayEvent TrayActionFIFO(trayEvent event);
-static void PushTrayAction(trayEvent event);
+static trayEvent TrayEventFIFO(trayEvent event);
+static void PushTrayEvent(trayEvent event);
 
 void TrayPopupMenu(void);
 static void PopupMenuItemSelected(const UINT16 item);
 
 
-
+// Just checking that everything is working properly
 void TrayTest(const char* test_string)
 {
     puts("Tray test success");
@@ -37,7 +51,6 @@ void TrayTest(const char* test_string)
 }
 
 // Initialisation of the icon
-//bool InitTrayIcon(char* icon_path, char* tooltip_text, DWORD info_flags)
 bool InitTrayIcon(const char* icon_path, const char* tooltip_text)
 {
     // Create a dummy window class and window for just the tray icon, makes the window callback a bit simpler
@@ -46,14 +59,14 @@ bool InitTrayIcon(const char* icon_path, const char* tooltip_text)
         puts("Problem registering tray window class");
     }
     DWORD info_flags = 0;
-    InitNotificationStruct(icon_path, tooltip_text, info_flags);
+    InitNotificationData(icon_path, tooltip_text, info_flags);
     puts("Finished NOTIFYDATAA struct");
     PlaceTrayIcon();
     
     return true;
 }
 
-void InitNotificationStruct(const char* icon_path, const char* tooltip_text, DWORD info_flags)
+void InitNotificationData(const char* icon_path, const char* tooltip_text, DWORD info_flags)
 {
     // The fixed items first
     ICON_DATA.cbSize = sizeof(NOTIFYICONDATAA);
@@ -76,28 +89,24 @@ void InitNotificationStruct(const char* icon_path, const char* tooltip_text, DWO
 
     ICON_DATA.uFlags = NIF_ICON | NIF_TIP | NIF_STATE | NIF_GUID | NIF_SHOWTIP | NIF_MESSAGE;
     ICON_DATA.dwInfoFlags = NIIF_NOSOUND | NIIF_LARGE_ICON | NIIF_USER;
-    
-    
-    ICON_DATA.hIcon = LoadImageA(NULL, icon_path, IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
-    if (ICON_DATA.hIcon == NULL)
-    {
-        printf("Error code %s loading icon file 0x%X\n", icon_path, GetLastError());
-    }
 
-    /*
     if (icon_path == NULL)
     {
         ICON_DATA.hIcon = NULL;
     }
     else
     {
-        ICON_DATA.hIcon = LoadImageA(NULL, "C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib_64x64.png", IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+        // Need to check that it is an .ico or .bmp file, other file types will not work
+        // Also need to confirm what the x and y sizes should be for .ico files
+        ICON_DATA.hIcon = LoadImageA(NULL, icon_path, IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+        if (ICON_DATA.hIcon == NULL)
+        {
+            printf("Error code %s loading icon file 0x%X\n", icon_path, GetLastError());
+        }
     }
-    */
     
     // Balloon uses the tray icon
     ICON_DATA.hBalloonIcon = ICON_DATA.hIcon;
-
 
     if (tooltip_text == NULL)
     {
@@ -149,7 +158,20 @@ void PlaceTrayIcon(void)
     }
     return;
 }
-// Notification balloon
+
+void HideTrayIcon(void)
+{
+    ICON_DATA.dwState = NIS_HIDDEN;
+    Shell_NotifyIconA(NIM_MODIFY, &ICON_DATA);
+    return;
+}
+
+void ShowTrayIcon(void)
+{
+    ICON_DATA.dwState = 0;
+    Shell_NotifyIconA(NIM_MODIFY, &ICON_DATA);
+    return;
+}
 
 // Interactions with the tray icon
 LRESULT CALLBACK TrayWindowProcess(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -161,7 +183,7 @@ LRESULT CALLBACK TrayWindowProcess(HWND hwnd, UINT message, WPARAM wParam, LPARA
         {
         case WM_LBUTTONDOWN:
         case WM_MOUSEMOVE:
-        case WM_LBUTTONDBLCLK:
+        case WM_MBUTTONDBLCLK:
         case WM_RBUTTONDOWN:
         case WM_RBUTTONDBLCLK:
         case WM_MBUTTONDOWN:
@@ -174,16 +196,20 @@ LRESULT CALLBACK TrayWindowProcess(HWND hwnd, UINT message, WPARAM wParam, LPARA
             TrayPopupMenu();
             break;
         // These get passed back to the user using a queue
-        case WM_MBUTTONDBLCLK:
-            PushTrayAction(tray_icon_double_clicked);
+        case WM_LBUTTONDBLCLK:
+            PushTrayEvent(TRAY_ICON_DOUBLE_CLICKED);
+            break;
         case NIN_BALLOONHIDE:
-            PushTrayAction(balloon_hidden);
+            PushTrayEvent(NOTIFICATION_BALLOON_HIDDEN);
+            break;
         case NIN_BALLOONTIMEOUT:
-            PushTrayAction(balloon_timed_out);
+            PushTrayEvent(NOTIFICATION_BALLOON_TIMEOUT);
+            break;
         case WM_LBUTTONUP:
-            PushTrayAction(tray_icon_clicked);
+            PushTrayEvent(TRAY_ICON_CLICKED);
+            break;
         case NIN_BALLOONUSERCLICK:
-            PushTrayAction(balloon_clicked);
+            PushTrayEvent(NOTIFICATION_BALLOON_CLICKED);
             break;
         default:
             printf("Unrecognised tray Icon Event: %llu\n", lParam);
@@ -202,29 +228,29 @@ LRESULT CALLBACK TrayWindowProcess(HWND hwnd, UINT message, WPARAM wParam, LPARA
     return (LRESULT)NULL;
 }
 
-void PushTrayAction(trayEvent event)
+void PushTrayEvent(trayEvent event)
 {
-    TrayActionFIFO(event);
+    TrayEventFIFO(event);
     return;
 }
 
-trayEvent GetTrayAction(void)
+trayEvent GetTrayEvent(void)
 {
-    return TrayActionFIFO(no_event);
+    return TrayEventFIFO(NO_TRAY_EVENT);
 }
 
-trayEvent TrayActionFIFO(trayEvent event)
+trayEvent TrayEventFIFO(trayEvent event)
 {
-    static trayEvent events_queue[TRAY_BUFFER_LENGTH] = { no_event };
+    static trayEvent events_queue[TRAY_BUFFER_LENGTH] = { NO_TRAY_EVENT };
     static int read = 0;
     static int write = 0;
 
-    if (event == no_event) // Read
+    if (event == NO_TRAY_EVENT) // Read
     {
         // Empty check
         if (read == write)
         {
-            return no_event;
+            return NO_TRAY_EVENT;
         }
         else
         {
@@ -261,7 +287,7 @@ trayEvent TrayActionFIFO(trayEvent event)
             }
         }
 
-        return no_event;
+        return NO_TRAY_EVENT;
     }
 }
 
