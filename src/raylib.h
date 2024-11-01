@@ -943,6 +943,7 @@ typedef enum {
     NPATCH_THREE_PATCH_HORIZONTAL   // Npatch layout: 3x1 tiles
 } NPatchLayout;
 
+#if defined (_WIN32)
 // Tray events 
 typedef enum
 {
@@ -953,6 +954,15 @@ typedef enum
     NOTIFICATION_BALLOON_HIDDEN,
     NOTIFICATION_BALLOON_CLICKED
 }trayEvent;
+
+typedef enum {
+    NOTIFY_ICON_NONE,
+    NOTIFY_ICON_INFO,
+    NOTIFY_ICON_WARN,
+    NOTIFY_ICON_ERROR,
+    NOTIFY_ICON_USER
+}notifyIcon;
+#endif
 
 // Callbacks to hook some internal functions
 // WARNING: These callbacks are intended for advanced users
@@ -1033,6 +1043,8 @@ RLAPI void RemoveTrayIcon(void);
 RLAPI void HideTrayIcon(void);
 RLAPI void ShowTrayIcon(void);
 RLAPI trayEvent GetTrayEvent(void);
+RLAPI bool SendNotification(const char* notification_title, const char* notification_text, const notifyIcon notification_icon, bool sound);
+RLAPI void CreateContextMenu(const char* menu_item_name[20], const int menu_item_identifier[20]);
 #endif
 
 // Cursor-related functions

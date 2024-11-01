@@ -30,6 +30,9 @@
 int main(void)
 {
     InitTrayIcon("C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib.ico", "Tooltip text");
+    const char* menu_items[] = { "Test 1", "SEPERATOR", "Item 2", NULL };
+    const int menu_itentifiers[] = { 0, 1, 2, 3 };
+    CreateContextMenu(menu_items, menu_itentifiers);
     /*
     Sleep(2000);
     puts("Hiding icon");
@@ -65,24 +68,33 @@ int main(void)
             switch (tray_event)
             {
             case (NO_TRAY_EVENT):
+                // Returned when there are no events in queue
                 break;
             case (TRAY_ICON_CLICKED):
                 puts("Tray icon clicked");
+                SetWindowFocused();
                 break;
             case (TRAY_ICON_DOUBLE_CLICKED):
-                puts("Tray icon double clicked");
+                puts("Tray icon double clicked, sending notification");
+                SendNotification("Notification title", "Text for the notification body", NOTIFY_ICON_USER, false);
+                /*
+                puts("Hiding icon for 1 second");
+                HideTrayIcon();
+                Sleep(1000);
+                ShowTrayIcon();
+                */
                 break;
             case (NOTIFICATION_BALLOON_TIMEOUT):
-                puts("Balloon timed out");
+                puts("Balloon timed out - Occurs when there is either no interaction with the notification or the user clicks to dismiss it");
                 break;
             case (NOTIFICATION_BALLOON_HIDDEN):
-                puts("Balloon hidden");
+                puts("Balloon hidden - Occurs when notification is sent and user is in \"Quiet Time\"");
                 break;
             case (NOTIFICATION_BALLOON_CLICKED):
                 puts("Balloon clicked");
                 break;
             default:
-                puts("Error with tray event fetch");
+                puts("Unexpected value from tray event");
                 break;
             }
 
