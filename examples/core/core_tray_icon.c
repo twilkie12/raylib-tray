@@ -22,6 +22,7 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include <stdio.h>
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -29,8 +30,8 @@
 int main(void)
 {
     puts("Starting");
-    TrayCheck("Parameter string");
-    InitTrayIcon(NULL, NULL, NULL);
+    TrayTest("Parameter string");
+    InitTrayIcon("C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib.ico", NULL);
 
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -65,6 +66,7 @@ int main(void)
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
+    RemoveTrayIcon();
     //--------------------------------------------------------------------------------------
 
     return 0;

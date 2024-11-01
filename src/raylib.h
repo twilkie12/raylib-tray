@@ -1015,7 +1015,9 @@ RLAPI void EnableEventWaiting(void);                              // Enable wait
 RLAPI void DisableEventWaiting(void);                             // Disable waiting for events on EndDrawing(), automatic events polling
 
 // Tray and notification related functions
-RLAPI void TrayCheck(void);
+RLAPI void TrayTest(const char* test_string);
+RLAPI bool InitTrayIcon(const char* icon_path, const char* tooltip_text);
+RLAPI void RemoveTrayIcon(void);
 
 // Cursor-related functions
 RLAPI void ShowCursor(void);                                      // Shows cursor

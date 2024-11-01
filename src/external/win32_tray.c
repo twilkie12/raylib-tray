@@ -1,12 +1,32 @@
 #include "win32_tray.h"
 
+
+#define NOGDI
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <Windows.h>
+#include <shellapi.h>
+
+#define TRAY_BUFFER_LENGTH 50
 static HWND TRAY_WINDOW_HANDLE;
 static NOTIFYICONDATAA ICON_DATA;
 static WNDCLASSA TRAY_WINDOW_CLASS;
 static HMENU TRAY_POPUP_MENU;
 
+static void InitNotificationStruct(const char* icon_path, const char* tooltip_text, DWORD info_flags);
+static bool RegisterTrayWindowClass(void);
+static void PlaceTrayIcon(void);
 
-void TrayTest(char* test_string)
+static LRESULT CALLBACK TrayWindowProcess(HWND, UINT, WPARAM, LPARAM);
+static trayEvent TrayActionFIFO(trayEvent event);
+static void PushTrayAction(trayEvent event);
+
+void TrayPopupMenu(void);
+static void PopupMenuItemSelected(const UINT16 item);
+
+
+
+void TrayTest(const char* test_string)
 {
     puts("Tray test success");
     if (test_string)
@@ -17,34 +37,36 @@ void TrayTest(char* test_string)
 }
 
 // Initialisation of the icon
-bool InitTrayIcon(char* icon_path, char* tooltip_text, DWORD info_flags)
+//bool InitTrayIcon(char* icon_path, char* tooltip_text, DWORD info_flags)
+bool InitTrayIcon(const char* icon_path, const char* tooltip_text)
 {
     // Create a dummy window class and window for just the tray icon, makes the window callback a bit simpler
     if (!RegisterTrayWindowClass())
     {
         puts("Problem registering tray window class");
     }
-
-    InitNotificationStruct(tooltip_text, icon_path, info_flags);
-    puts("Finished notifydata struct");
+    DWORD info_flags = 0;
+    InitNotificationStruct(icon_path, tooltip_text, info_flags);
+    puts("Finished NOTIFYDATAA struct");
     PlaceTrayIcon();
     
     return true;
 }
 
-void InitNotificationStruct(char* tooltip_text, char* icon_path, DWORD info_flags)
+void InitNotificationStruct(const char* icon_path, const char* tooltip_text, DWORD info_flags)
 {
     // The fixed items first
     ICON_DATA.cbSize = sizeof(NOTIFYICONDATAA);
     ICON_DATA.hWnd = TRAY_WINDOW_HANDLE;
     // Not interested in overcomplicating things by responding differently to keyboard selection or different locations on the icon
     ICON_DATA.uVersion = NOTIFYICON_VERSION;
-    // {8E53BAC3-0CCE-4EA4-9260-4DD96814F1AA}
-    static const GUID shell_icon_guid = { 0x8e53bac3, 0xcce, 0x4ea4, { 0x92, 0x60, 0x4d, 0xd9, 0x68, 0x14, 0xf1, 0xaa } };
+    // {98C27C25-829B-497D-BDA9-F4606B1399B6}
+    static const GUID shell_icon_guid = { 0x98c27c25, 0x829b, 0x497d, { 0xbd, 0xa9, 0xf4, 0x60, 0x6b, 0x13, 0x99, 0xb6 } };
+
     ICON_DATA.guidItem = shell_icon_guid;
     // Don't want to start hidden but make it an option to hide
-    ICON_DATA.dwState = NIS_HIDDEN;
-    ICON_DATA.dwStateMask = 0;
+    ICON_DATA.dwState = 0;
+    ICON_DATA.dwStateMask = NIS_HIDDEN;
 
     ICON_DATA.uCallbackMessage = WM_TRAYICON;
 
@@ -52,12 +74,16 @@ void InitNotificationStruct(char* tooltip_text, char* icon_path, DWORD info_flag
     *ICON_DATA.szInfo = '\0';
     *ICON_DATA.szInfoTitle = '\0';
 
-
-
     ICON_DATA.uFlags = NIF_ICON | NIF_TIP | NIF_STATE | NIF_GUID | NIF_SHOWTIP | NIF_MESSAGE;
+    ICON_DATA.dwInfoFlags = NIIF_NOSOUND | NIIF_LARGE_ICON | NIIF_USER;
     
     
-    ICON_DATA.hIcon = LoadImageA(NULL, "C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib_64x64.png", IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+    ICON_DATA.hIcon = LoadImageA(NULL, icon_path, IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+    if (ICON_DATA.hIcon == NULL)
+    {
+        printf("Error code %s loading icon file 0x%X\n", icon_path, GetLastError());
+    }
+
     /*
     if (icon_path == NULL)
     {
@@ -68,6 +94,7 @@ void InitNotificationStruct(char* tooltip_text, char* icon_path, DWORD info_flag
         ICON_DATA.hIcon = LoadImageA(NULL, "C:/Users/Wilkie/Documents/RayGUI_dev/raylib/logo/raylib_64x64.png", IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
     }
     */
+    
     // Balloon uses the tray icon
     ICON_DATA.hBalloonIcon = ICON_DATA.hIcon;
 
@@ -78,7 +105,7 @@ void InitNotificationStruct(char* tooltip_text, char* icon_path, DWORD info_flag
     }
     else
     {
-        strcpy_s(ICON_DATA.szTip, tooltip_text, 128);
+        strcpy_s(ICON_DATA.szTip, 128, tooltip_text);
         ICON_DATA.szTip[127] = '\0';
     }
     return;
@@ -115,6 +142,7 @@ void PlaceTrayIcon(void)
         if (!Shell_NotifyIconA(NIM_ADD, &ICON_DATA))
         {
             puts("Tray icon creation error");
+
             Shell_NotifyIconA(NIM_DELETE, &ICON_DATA);
             return;
         }
@@ -185,7 +213,6 @@ trayEvent GetTrayAction(void)
     return TrayActionFIFO(no_event);
 }
 
-#define TRAY_BUFFER_LENGTH 50
 trayEvent TrayActionFIFO(trayEvent event)
 {
     static trayEvent events_queue[TRAY_BUFFER_LENGTH] = { no_event };
@@ -250,10 +277,11 @@ void PopupMenuItemSelected(const UINT16 item)
     return;
 }
 
-
 // Cleaning up and quitting
-void RemoveTrayWindowClass(void)
+void RemoveTrayIcon(void)
 {
+    puts("Removing tray icon");
+    Shell_NotifyIconA(NIM_DELETE, &ICON_DATA);
     DestroyWindow(TRAY_WINDOW_HANDLE);
     UnregisterClassA("TrayIconClass", TRAY_WINDOW_CLASS.hInstance);
     return;

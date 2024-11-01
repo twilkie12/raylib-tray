@@ -4,14 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define NOGDI
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <Windows.h>
-#include <shellapi.h>
 
-
-#define WM_TRAYICON (0x9009)
+#define WM_TRAYICON (9009)
 
 typedef enum
 {
@@ -24,22 +18,10 @@ typedef enum
 	unknown
 }trayEvent;
 
-void TrayTest(char* test_string);
+void TrayTest(const char* test_string);
 
-bool InitTrayIcon(char* icon_path, char* tooltip_text, DWORD info_flags);
+bool InitTrayIcon(const char* icon_path, const char* tooltip_text);
 trayEvent GetTrayAction(void);
-
-
-static void InitNotificationStruct(char* tooltip_text, char* icon_path, DWORD info_flags);
-static bool RegisterTrayWindowClass(void);
-static void RemoveTrayWindowClass(void);
-static void PlaceTrayIcon(void);
-
-static LRESULT CALLBACK TrayWindowProcess(HWND, UINT, WPARAM, LPARAM);
-static trayEvent TrayActionFIFO(trayEvent event);
-static void PushTrayAction(trayEvent event);
-
-void TrayPopupMenu(void);
-static void PopupMenuItemSelected(const UINT16 item);
+void RemoveTrayIcon(void);
 
 #endif // !_WIN32_TRAY_H_
