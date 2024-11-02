@@ -55,8 +55,6 @@ int main(void)
     const int screenHeight = 400;
 
     //--------------------------------------------------------------------------------------
-    int context_menu_id = 0;
-    trayEvent tray_event = NO_TRAY_EVENT;
 
     // Start the GUI
     while (!GLOBAL_QUIT)
@@ -70,20 +68,12 @@ int main(void)
             // Main window loop
             while (!WindowShouldClose() && !MINIMISED_TO_TRAY && !GLOBAL_QUIT)
             {
+                // Does all the processing for the tray icon and tray context menu
+                TrayAndContextMenuEvents();
+
                 //----------------------------------------------------------------------------------
                 // TODO: Update your variables here
                 //----------------------------------------------------------------------------------
-                // Go through and process all the tray events
-                while (GetTrayEvent(&tray_event))
-                {
-                    ProcessTrayEvents(tray_event);
-                }
-
-                // Check if a context menu item has been selected
-                if (ContextMenuItemSelected(&context_menu_id))
-                {
-                    ProcessContextMenuSelection(context_menu_id);
-                }
 
                 // Draw
                 //----------------------------------------------------------------------------------
@@ -99,22 +89,12 @@ int main(void)
             // De-Initialization
             //--------------------------------------------------------------------------------------
             MINIMISED_TO_TRAY = true;
+            // This isn't the best way to do it, might be worth adding HideWindow() to Raylib in future
             CloseWindow();        // Close window and OpenGL context
         }
         else
         {
-
-            // Go through and process all the tray events
-            while (GetTrayEvent(&tray_event))
-            {
-                ProcessTrayEvents(tray_event);
-            }
-
-            // Check if a context menu item has been selected
-            if (ContextMenuItemSelected(&context_menu_id))
-            {
-                ProcessContextMenuSelection(context_menu_id);
-            }
+            TrayAndContextMenuEvents();
             Sleep(100);
         }
     }
@@ -123,6 +103,25 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     return 0;
+}
+
+void TrayAndContextMenuEvents(void)
+{
+    int context_menu_id = 0;
+    trayEvent tray_event = NO_TRAY_EVENT;
+
+    // Go through and process all the tray events
+    while (GetTrayEvent(&tray_event))
+    {
+        ProcessTrayEvents(tray_event);
+    }
+
+    // Check if a context menu item has been selected and act on it
+    if (ContextMenuItemSelected(&context_menu_id))
+    {
+        ProcessContextMenuSelection(context_menu_id);
+    }
+    return;
 }
 
 void ProcessTrayEvents(trayEvent tray_event)
