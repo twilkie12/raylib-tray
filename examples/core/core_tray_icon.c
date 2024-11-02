@@ -130,8 +130,15 @@ void ProcessTrayEvents(trayEvent tray_event)
     switch (tray_event)
     {
     case (TRAY_ICON_CLICKED):
-        puts("Tray icon clicked, bring raylib window to front");
-        SetWindowFocused();
+        if (!MINIMISED_TO_TRAY)
+        {
+            puts("Tray icon clicked, bring raylib window to front");
+            SetWindowFocused();
+        }
+        else
+        {
+            MINIMISED_TO_TRAY = false;
+        }
         break;
     case (TRAY_ICON_DOUBLE_CLICKED):
         puts("Tray icon double clicked, sending notification");
