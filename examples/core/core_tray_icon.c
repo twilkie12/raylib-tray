@@ -1,23 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib [core] example - Basic window
+*   raylib [core] example - Tray icon
 *
-*   Welcome to raylib!
+*   Example originally created with raylib 4.5, last time updated with raylib 4.5
 *
-*   To test examples, just press F6 and execute raylib_compile_execute script
-*   Note that compiled executable is placed in the same folder as .c file
-*
-*   You can find all basic examples on C:\raylib\raylib\examples folder or
-*   raylib official webpage: www.raylib.com
-*
-*   Enjoy using raylib. :)
-*
-*   Example originally created with raylib 1.0, last time updated with raylib 1.0
+*   Example contributed by T Wilkie (@twilkie12) and reviewed by Ramon Santamaria (@raysan5)
 *
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
 *
-*   Copyright (c) 2013-2024 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2023 T Wilkie (@twilkie12)
 *
 ********************************************************************************************/
 
@@ -37,7 +29,6 @@ void ProcessContextMenuSelection(selection_id);
 
 contextMenuItem menu_items[4] = { 0 };
 
-
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -47,10 +38,10 @@ int main(void)
     //--------------------------------------------------------------------------------------
     InitTrayIcon(raylib_logo, "Tooltip text");
     // Context menu
-    const char* menu_items[] = { "Base", "Orange", "Blue", NULL, "Hide/Unhide", NULL, "Quit", NULL };
-    const int menu_itentifiers[] = { 0, 1, 2, CONTEXT_MENU_SEPERATOR_ID, 3, CONTEXT_MENU_SEPERATOR_ID, 10, CONTEXT_MENU_END_ID };
-    // This and the implementation of ProcessContextMenuSelection both feel a bit janky
-    InitContextMenu(menu_items, menu_itentifiers);
+    const char* menu_item_names[] = { "Base", "Orange", "Blue", NULL, "Hide/Unhide", NULL, "Quit", NULL };
+    const int menu_item_identifiers[] = { 0, 1, 2, CONTEXT_MENU_SEPERATOR_ID, 3, CONTEXT_MENU_SEPERATOR_ID, 10, CONTEXT_MENU_END_ID };
+    // This and the implementation of ProcessContextMenuSelection both feel a bit janky but not sure how to do it better, a struct doesn't really work nicely either
+    InitContextMenu(menu_item_names, menu_item_identifiers);
 
     const int screenWidth = 850;
     const int screenHeight = 400;
@@ -69,7 +60,7 @@ int main(void)
             // Main window loop
             while (!WindowShouldClose() && !MINIMISED_TO_TRAY && !GLOBAL_QUIT)
             {
-                // Does all the processing for the tray icon and tray context menu
+                // Does all the processing for the tray icon and tray context menu, call every draw loop
                 TrayAndContextMenuEvents();
 
                 //----------------------------------------------------------------------------------
@@ -90,12 +81,14 @@ int main(void)
             // De-Initialization
             //--------------------------------------------------------------------------------------
             MINIMISED_TO_TRAY = true;
-            // This isn't the best way to do it, might be worth adding HideWindow() to Raylib in future
+            // This isn't the best way to do it, I might look at adding HideWindow() to Raylib in future
             CloseWindow();        // Close window and OpenGL context
         }
         else
         {
+            // Even when the main Raylib window is closed keep checking the tray window for events
             TrayAndContextMenuEvents();
+            // Rate limiting, a 0.1s response time feel responsive for the tray
             Sleep(100);
         }
     }
@@ -125,6 +118,8 @@ void TrayAndContextMenuEvents(void)
     return;
 }
 
+// This is all the events from acting on the tray icon and notification ballon
+// You should implement your own actions here for each trayEvent
 void ProcessTrayEvents(trayEvent tray_event)
 {
     switch (tray_event)
@@ -161,6 +156,8 @@ void ProcessTrayEvents(trayEvent tray_event)
     return;
 }
 
+// When an item from the context menu is selected it will return the item id you associated with that item
+// This is the place to implement your own actions for each menu item
 void ProcessContextMenuSelection(selection_id)
 {
     switch (selection_id)
