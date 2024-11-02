@@ -955,13 +955,23 @@ typedef enum
     NOTIFICATION_BALLOON_CLICKED
 }trayEvent;
 
-typedef enum {
-    NOTIFY_ICON_NONE,
-    NOTIFY_ICON_INFO,
-    NOTIFY_ICON_WARN,
-    NOTIFY_ICON_ERROR,
-    NOTIFY_ICON_USER
-}notifyIcon;
+typedef struct
+{
+    const char* item_name;
+    int item_id;
+}contextMenuItem;
+
+#define MAX_CONTEXT_MENU_ITEMS 20
+// For the built in notification icons
+#define NOTIFY_ICON_NONE "NONE"
+#define NOTIFY_ICON_INFO "INFO"
+#define NOTIFY_ICON_WARN "WARN"
+#define NOTIFY_ICON_ERROR "ERROR"
+#define NOTIFY_USE_TRAY_ICON NULL
+// To add a seperator line to the context menu
+#define CONTEXT_MENU_END_ID -1
+#define CONTEXT_MENU_SEPERATOR_ID -2
+
 #endif
 
 // Callbacks to hook some internal functions
@@ -1037,14 +1047,17 @@ RLAPI void DisableEventWaiting(void);                             // Disable wai
 
 #if defined (_WIN32)
 // Tray and notification related functions
-RLAPI void TrayTest(const char* test_string);
-RLAPI bool InitTrayIcon(const char* icon_path, const char* tooltip_text);
-RLAPI void RemoveTrayIcon(void);
-RLAPI void HideTrayIcon(void);
-RLAPI void ShowTrayIcon(void);
-RLAPI trayEvent GetTrayEvent(void);
-RLAPI bool SendNotification(const char* notification_title, const char* notification_text, const notifyIcon notification_icon, bool sound);
-RLAPI void CreateContextMenu(const char* menu_item_name[20], const int menu_item_identifier[20]);
+RLAPI void GetWindowMessages(void);
+RLAPI bool InitTrayIcon(const char* icon_path, const char* tooltip_text);   // Initialises the tray icon and displays it
+RLAPI void ChangeTrayIcon(const char* icon_path);
+RLAPI void ChangeTrayTooltip(const char* tooltip_text);
+RLAPI void RemoveTrayIcon(void);                                  // Removes and de-initialises the tray icon
+RLAPI void HideTrayIcon(void);                                    // Hides the tray icon from the user
+RLAPI void ShowTrayIcon(void);                                    // Makes the tray icon visibile
+RLAPI bool GetTrayEvent(trayEvent* event);                               // Gets the oldest tray event from the listof events
+RLAPI bool SendNotification(const char* notification_title, const char* notification_text, const char* notify_icon_path, bool sound); // Sends a notification balloon to the user
+RLAPI void InitContextMenu(const char* menu_item_name[20], const int menu_item_identifier[20]);   // Create the context menu shown on right click of the tray icon. This feels like not the best way to do it
+RLAPI bool ContextMenuItemSelected(int* menu_identifier);         // Gets the most recently selected context menu item or false if none selected
 #endif
 
 // Cursor-related functions
