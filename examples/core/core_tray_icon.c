@@ -31,6 +31,7 @@ const char* raylib_blue_logo = "./resources/raylib_blue.ico";
 bool GLOBAL_QUIT = false;
 bool MINIMISED_TO_TRAY = false;
 
+void TrayAndContextMenuEvents(void);
 void ProcessTrayEvents(trayEvent tray_event);
 void ProcessContextMenuSelection(selection_id);
 
