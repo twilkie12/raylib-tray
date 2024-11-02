@@ -6,7 +6,6 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <shellapi.h>
-#include <assert.h>
 
 
 #define WM_TRAYICON (9009)
@@ -51,8 +50,8 @@ void HideTrayIcon(void);
 void ShowTrayIcon(void);
 bool GetTrayEvent(trayEvent* event);
 bool SendNotification(const char* notification_title, const char* notification_text, const char* notify_icon_path, bool sound);
-void InitContextMenu(const char* menu_item_name[20], const int menu_item_identifier[20]);
-bool ContextMenuItemSelected(int* menu_identifier);
+void InitContextMenu(const char* menu_item_names[20], const int menu_item_identifiers[20]);
+bool ContextMenuItemSelected(int* menu_item_identifier);
 
 // The static doesn't do anything except make it clear to developers what functions are to be internal
 static void GetWindowMessages(void);
@@ -84,18 +83,6 @@ void GetWindowMessages(void)
     return;
 }
 
-
-// Just checking that everything is working properly
-void TrayTest(const char* test_string)
-{
-    puts("Tray test success");
-    if (test_string)
-    {
-        puts(test_string);
-    }
-    return;
-}
-
 // Initialisation of the icon
 bool InitTrayIcon(const char* icon_path, const char* tooltip_text)
 {
@@ -113,7 +100,7 @@ bool InitTrayIcon(const char* icon_path, const char* tooltip_text)
 
 void InitNotificationData(const char* icon_path, const char* tooltip_text, DWORD info_flags)
 {
-    // The fixed menu_item_name first
+    // The fixed menu_item_names first
     ICON_DATA.cbSize = sizeof(NOTIFYICONDATAA);
     ICON_DATA.hWnd = TRAY_WINDOW_HANDLE;
     // Not interested in overcomplicating things by responding differently to keyboard selection or different locations on the icon
@@ -297,7 +284,6 @@ LRESULT CALLBACK TrayWindowProcess(HWND hwnd, UINT message, WPARAM wParam, LPARA
             PushTrayEvent(NOTIFICATION_BALLOON_CLICKED);
             break;
         default:
-            assert(false);
             printf("Unrecognised tray Icon Event: %llu\n", lParam);
             break;
         }

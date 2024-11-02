@@ -1056,8 +1056,8 @@ RLAPI void HideTrayIcon(void);                                    // Hides the t
 RLAPI void ShowTrayIcon(void);                                    // Makes the tray icon visibile
 RLAPI bool GetTrayEvent(trayEvent* event);                               // Gets the oldest tray event from the listof events
 RLAPI bool SendNotification(const char* notification_title, const char* notification_text, const char* notify_icon_path, bool sound); // Sends a notification balloon to the user
-RLAPI void InitContextMenu(const char* menu_item_name[20], const int menu_item_identifier[20]);   // Create the context menu shown on right click of the tray icon. This feels like not the best way to do it
-RLAPI bool ContextMenuItemSelected(int* menu_identifier);         // Gets the most recently selected context menu item or false if none selected
+RLAPI void InitContextMenu(const char* menu_item_names[20], const int menu_item_identifiers[20]);   // Create the context menu shown on right click of the tray icon. This feels like not the best way to do it
+RLAPI bool ContextMenuItemSelected(int* menu_item_identifier);         // Gets the most recently selected context menu item or false if none selected
 #endif
 
 // Cursor-related functions
